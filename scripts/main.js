@@ -11,7 +11,9 @@ document.body.appendChild(stats.dom);
 const renderer = new THREE.WebGLRenderer();
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x80a0e0); // sky blue
+renderer.setClearColor(0x80a0e0);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 // camera setup
@@ -31,13 +33,23 @@ scene.add(world);
 
 // setup lights
 function setupLights() {
-    const light1 = new THREE.DirectionalLight();
-    light1.position.set(1, 1, 1);
-    scene.add(light1);
+    const sun = new THREE.DirectionalLight();
+    sun.position.set(50, 50, 50);
+    sun.castShadow = true;
+    // Set the size of the sun's shadow box
+    sun.shadow.camera.left = -40;
+    sun.shadow.camera.right = 40;
+    sun.shadow.camera.top = 40;
+    sun.shadow.camera.bottom = -40;
+    sun.shadow.camera.near = 0.1;
+    sun.shadow.camera.far = 200;
+    sun.shadow.bias = -0.0001;
+    sun.shadow.mapSize = new THREE.Vector2(2048, 2048);
+    scene.add(sun);
+    scene.add(sun.target);
 
-    const light2 = new THREE.DirectionalLight();
-    light2.position.set(-1, -1, -0.5);
-    scene.add(light2);
+    // const shadowHelper = new THREE.CameraHelper(sun.shadow.camera);
+    // scene.add(shadowHelper);
 
     const ambient = new THREE.AmbientLight();
     ambient.intensity = 0.1;
