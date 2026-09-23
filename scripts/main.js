@@ -4,6 +4,7 @@ import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { World } from './world';
 import { createUI } from './ui.js';
 import { Player } from './player.js';
+import { Physics } from './physics.js';
 
 const stats = new Stats();
 document.body.appendChild(stats.dom);
@@ -31,6 +32,8 @@ const world = new World();
 world.generate();
 scene.add(world);
 const player = new Player(scene);
+
+const physics = new Physics(scene);
 
 // setup lights
 function setupLights() {
@@ -66,6 +69,8 @@ function animate() {
     let dt = (currentTime-previousTime)/1000;
     requestAnimationFrame(animate);
     player.applyInputs(dt);
+    player.updateBoundsHelper();
+    physics.update(dt, player, world);
     renderer.render(scene, player.controls.isLocked ? player.camera: orbitCamera);
     stats.update();
     previousTime = currentTime;
